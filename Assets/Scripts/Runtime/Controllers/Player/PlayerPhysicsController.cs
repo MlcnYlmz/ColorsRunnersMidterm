@@ -54,11 +54,15 @@ namespace Runtime.Controllers.Player
                 case ColorfulObstacleTag:
                     playerManager.GroundObstacleState();
                     Debug.LogWarning("Slow Speed");
+                    ObstacleSignals.Instance.onSendObstacleGroundType.Invoke(GroundObstacleTypes.Turret);
+                    GroundObstacleSignals.Instance.onObstacleAttack.Invoke();
                     break;
 
                 case ColorfulDynamicObstacleTag:
-                    playerManager.DynamicGroundObstacleState();
+                    
                     Debug.LogWarning("Drone Area");
+                    ObstacleSignals.Instance.onSendObstacleGroundType.Invoke(GroundObstacleTypes.Turret);
+                    GroundObstacleSignals.Instance.onObstacleAttack.Invoke();
                     break;
 
                 case GroundObstacleTag:

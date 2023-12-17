@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using Runtime.Signals;
 
 namespace Runtime.Controllers.Obstacles
 {
@@ -9,13 +10,13 @@ namespace Runtime.Controllers.Obstacles
 
         internal void DroneArea()
         {
-
+            StackSignals.Instance.onInteractionObstacleWithPlayer?.Invoke();
         }
 
 
         internal void TurretArea()
         {
-
+            StackSignals.Instance.onInteractionObstacleWithPlayer?.Invoke();
         }
     }
 }

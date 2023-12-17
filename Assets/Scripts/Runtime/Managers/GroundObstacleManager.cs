@@ -13,7 +13,7 @@ namespace Runtime.Managers
 
         #region Serialized Variables
 
-        [SerializeField] private ObstacleDroneController obstacleDroneController;
+        [SerializeField] private GroundObstacleController obstacleDroneController;
 
         #endregion
 
