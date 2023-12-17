@@ -1,5 +1,6 @@
 ﻿using Runtime.Extentions;
 using UnityEngine.Events;
+using Runtime.Enums;
 
 namespace Runtime.Signals
 {
@@ -10,5 +11,6 @@ namespace Runtime.Signals
         public UnityAction<bool> onObstacleColorMatch = delegate { };
         public UnityAction onObstacleAttack = delegate { };
         public UnityAction<GroundObstacleTypes> onSendObstacleGroundType = delegate { };
+        
     }
 }

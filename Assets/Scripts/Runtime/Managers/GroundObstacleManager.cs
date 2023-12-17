@@ -1,11 +1,9 @@
-using System;
-using Runtime.Commands.Obstacle;
+﻿using System;
 using Runtime.Controllers.Obstacles;
 using Runtime.Enums;
 using Runtime.Signals;
 using Sirenix.OdinInspector;
 using UnityEngine;
-using UnityEngine.PlayerLoop;
 
 namespace Runtime.Managers
 {
@@ -20,9 +18,7 @@ namespace Runtime.Managers
         #endregion
 
         #region Private Variables
-
-        private ObstacleAttackCommand _obstacleAttackCommand;
-
+        
         [ShowInInspector] GroundObstacleTypes _obstacleType;
 
         #endregion
@@ -56,10 +52,10 @@ namespace Runtime.Managers
             switch (_obstacleType)
             {
                 case GroundObstacleTypes.Drone:
-                    obstacleDroneController.DroneAttack();
+                    obstacleDroneController.DroneArea();
                     break;
                 case GroundObstacleTypes.Turret:
-                    obstacleDroneController.TurretAttack();
+                    obstacleDroneController.TurretArea();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

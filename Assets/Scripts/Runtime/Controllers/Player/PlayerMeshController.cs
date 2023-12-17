@@ -1,5 +1,5 @@
-using System;
-using Runtime.Signals;
+using Runtime.Data.ValueObject;
+using Sirenix.OdinInspector;
 using TMPro;
 using UnityEngine;
 
@@ -7,19 +7,27 @@ namespace Runtime.Controllers.Player
 {
     public class PlayerMeshController : MonoBehaviour
     {
-        #region Self Variables
-
-        #region Serialized Variables
-
+        [Header("Serialized Variables")]
+        [SerializeField] private SkinnedMeshRenderer skinnedMeshRenderer;
         [SerializeField] private TextMeshPro scoreText;
 
-        #endregion
+        [Header("Private Variables")]
+        [ShowInInspector] private CollectableColorData _collectableColorData;
 
-        #endregion
+        public void SetColorData(CollectableColorData colorData)
+        {
+            _collectableColorData = colorData;
+        }
 
-        internal void SetTotalScore(int value)
+        public void UpdateStackScore(int value)
         {
             scoreText.text = value.ToString();
+        }
+
+        public void PlayerColorChanged(int value)
+        {
+            skinnedMeshRenderer.material = _collectableColorData.MaterialsList[value];
+            Debug.LogWarning("Color Changed");
         }
     }
 }

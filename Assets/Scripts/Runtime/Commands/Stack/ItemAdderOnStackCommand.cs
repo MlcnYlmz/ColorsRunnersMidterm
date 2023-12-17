@@ -8,13 +8,15 @@ namespace Runtime.Commands.Stack
     public class ItemAdderOnStackCommand
     {
         private StackManager _stackManager;
+        private CollectableManager _collectableManager;
         private List<GameObject> _collectableStack;
         private StackData _data;
 
-        public ItemAdderOnStackCommand(StackManager stackManager, ref List<GameObject> collectableStack,
+        public ItemAdderOnStackCommand(StackManager stackManager,CollectableManager collectableManager, ref List<GameObject> collectableStack,
             ref StackData stackData)
         {
             _stackManager = stackManager;
+            _collectableManager = collectableManager;
             _collectableStack = collectableStack;
             _data = stackData;
         }
@@ -25,7 +27,7 @@ namespace Runtime.Commands.Stack
             {
                 _collectableStack.Add(collectableGameObject);
                 collectableGameObject.transform.SetParent(_stackManager.transform);
-                collectableGameObject.transform.localPosition = new Vector3(0, 1f, 0.335f);
+                collectableGameObject.transform.localPosition = new Vector3(0, 1f, 0.335f); // y: 1f
             }
             else
             {
@@ -34,7 +36,9 @@ namespace Runtime.Commands.Stack
                 newPos.z += _data.CollectableOffsetInStack;
                 collectableGameObject.transform.localPosition = newPos;
                 _collectableStack.Add(collectableGameObject);
+
             }
+            _stackManager.OnSetStackAmount();
         }
     }
 }

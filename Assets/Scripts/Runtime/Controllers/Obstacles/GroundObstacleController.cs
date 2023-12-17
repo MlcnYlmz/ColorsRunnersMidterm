@@ -7,13 +7,13 @@ namespace Runtime.Controllers.Obstacles
 
 
 
-        internal void DroneAttack()
+        internal void DroneArea()
         {
 
         }
 
 
-        internal void TurretAttack()
+        internal void TurretArea()
         {
 
         }

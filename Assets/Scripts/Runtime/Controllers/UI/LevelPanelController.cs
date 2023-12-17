@@ -1,7 +1,6 @@
 using Runtime.Signals;
 using TMPro;
 using UnityEngine;
-using UnityEngine.SocialPlatforms.Impl;
 
 namespace Runtime.Controllers.UI
 {

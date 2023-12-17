@@ -1,4 +1,3 @@
-using System;
 using Runtime.Data.ValueObject;
 using Runtime.Keys;
 using Runtime.Managers;
@@ -22,7 +21,7 @@ namespace Runtime.Controllers.Player
         #region Private Variables
 
         [Header("Data")] [ShowInInspector] private PlayerMovementData _data;
-        [ShowInInspector] private bool _isReadyToMove, _isReadyToPlay;
+        [ShowInInspector] private bool _isReadyToMove, _isReadyToPlay, _isSlowDown;
         [ShowInInspector] private float _inputValue;
         [ShowInInspector] private Vector2 _clampValues;
 
@@ -78,9 +77,14 @@ namespace Runtime.Controllers.Player
         {
             if (_isReadyToPlay)
             {
-                if (_isReadyToMove)
+                if (_isReadyToMove && !_isSlowDown)
                 {
                     Move();
+                }
+                else if (_isSlowDown)
+                {
+                    Slow();
+                    Debug.LogWarning("Slowly");
                 }
                 else
                 {
@@ -124,6 +128,28 @@ namespace Runtime.Controllers.Player
             Stop();
             _isReadyToPlay = false;
             _isReadyToMove = false;
+        }
+
+        private void Slow()
+        {
+            var velocity = rigidbody.velocity;
+            velocity = new Vector3(_inputValue * _data.SidewaysSpeed / 4, velocity.y,
+                _data.ForwardSpeed / 4);
+            rigidbody.velocity = velocity;
+
+            Vector3 position;
+            position = new Vector3(
+                Mathf.Clamp(rigidbody.position.x, _clampValues.x,
+                    _clampValues.y),
+                (position = rigidbody.position).y,
+                position.z);
+            rigidbody.position = position;
+        }
+
+
+        internal void SlowState(bool state)
+        {
+            _isSlowDown = state;
         }
     }
 }

@@ -1,4 +1,5 @@
 using System.Collections;
+using DG.Tweening;
 using Runtime.Controllers.Player;
 using Runtime.Data.UnityObject;
 using Runtime.Data.ValueObject;
@@ -26,23 +27,47 @@ namespace Runtime.Managers
         #region Private Variables
 
         [ShowInInspector] private PlayerData _data;
+        [ShowInInspector] private CollectableData _dataCollectable;
         private const string PlayerDataPath = "Data/CD_Player";
 
+
+        public CollectableColorTypes playerColorType;
+
+        private readonly string _collectableDataPath = "Data/CD_Collectable";
+
         #endregion
 
         #endregion
+
+
 
         private void Awake()
         {
             _data = GetPlayerData();
+            _dataCollectable = GetCollectableData();
             SendPlayerDataToControllers();
+            SendDataToController();
         }
+
+
+        private void Start()
+        {
+            meshController.PlayerColorChanged((int)playerColorType);
+            PlayerSignals.Instance.onColorType?.Invoke(playerColorType);
+        }
+
+        private CollectableData GetCollectableData() => Resources.Load<CD_Collectable>(_collectableDataPath).Data;
 
         private PlayerData GetPlayerData() => Resources.Load<CD_Player>(PlayerDataPath).Data;
 
         private void SendPlayerDataToControllers()
         {
             movementController.SetMovementData(_data.MovementData);
+        }
+
+        private void SendDataToController()
+        {
+            meshController.SetColorData(_dataCollectable.ColorData);
         }
 
         private void OnEnable()
@@ -63,6 +88,7 @@ namespace Runtime.Managers
             CoreGameSignals.Instance.onReset += OnReset;
 
             PlayerSignals.Instance.onSetTotalScore += OnSetTotalScore;
+            PlayerSignals.Instance.onSetStackScore += OnSetStackScore;
             CoreGameSignals.Instance.onMiniGameEntered += OnMiniGameEntered;
         }
 
@@ -80,13 +106,21 @@ namespace Runtime.Managers
 
         private void OnMiniGameEntered()
         {
-            PlayerSignals.Instance.onPlayConditionChanged?.Invoke(false);
+            DOVirtual.DelayedCall(0.25f, () =>
+            {
+                PlayerSignals.Instance.onPlayConditionChanged?.Invoke(false);
+            });
             StartCoroutine(WaitForFinal());
         }
 
         private void OnSetTotalScore(int value)
         {
-            meshController.SetTotalScore(value);
+            
+        }
+
+        private void OnSetStackScore(int value)
+        {
+            meshController.UpdateStackScore(value);
         }
 
         private void OnReset()
@@ -108,6 +142,8 @@ namespace Runtime.Managers
             CoreGameSignals.Instance.onReset -= OnReset;
 
             PlayerSignals.Instance.onSetTotalScore -= OnSetTotalScore;
+            PlayerSignals.Instance.onSetStackScore -= OnSetStackScore;
+
             CoreGameSignals.Instance.onMiniGameEntered -= OnMiniGameEntered;
         }
 
@@ -129,6 +165,45 @@ namespace Runtime.Managers
             yield return new WaitForSeconds(2f);
             gameObject.SetActive(false);
             CoreGameSignals.Instance.onMiniGameStart?.Invoke();
+        }
+
+        internal void ChangeColor(CollectableColorTypes typeValue)
+        {
+            playerColorType = typeValue;
+
+            PlayerSignals.Instance.onColorType?.Invoke(playerColorType);
+
+            meshController.PlayerColorChanged((int)typeValue);
+        }
+
+        internal void SetSlowSpeed()
+        {
+            movementController.SlowState(true);
+        }
+
+        internal void SetNormalSpeed()
+        {
+            movementController.SlowState(false);
+        }
+
+
+        internal void DynamicGroundObstacleState()
+        {
+            DOVirtual.DelayedCall(0.5f, () =>
+            {
+                movementController.OnReset();
+                ObstacleSignals.Instance.onObstacleDroneArea?.Invoke();
+            });
+        }
+
+        internal void GroundObstacleState()
+        {
+            movementController.SlowState(true);
+            
+            DOVirtual.DelayedCall(0.75f, () =>
+            {
+                ObstacleSignals.Instance.onObstacleTurretArea?.Invoke();
+            });
         }
     }
 }

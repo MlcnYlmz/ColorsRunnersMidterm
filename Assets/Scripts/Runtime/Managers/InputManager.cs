@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using Runtime.Data.UnityObject;
 using Runtime.Data.ValueObject;
@@ -118,6 +117,8 @@ namespace Runtime.Managers
 
                         _mousePosition = Input.mousePosition;
 
+
+                        
                         InputSignals.Instance.onInputDragged?.Invoke(new HorizontalnputParams()
                         {
                             HorizontalInputValue = _moveVector.x,

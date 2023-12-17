@@ -10,5 +10,7 @@ namespace Runtime.Signals
         public UnityAction<bool> onPlayConditionChanged = delegate { };
         public UnityAction<bool> onMoveConditionChanged = delegate { };
         public UnityAction<int> onSetTotalScore = delegate { };
+        public UnityAction<int> onSetStackScore = delegate { };
+        public UnityAction<CollectableColorTypes> onColorType = delegate { };
     }
 }

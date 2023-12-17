@@ -27,6 +27,7 @@ namespace Runtime.Commands.Stack
             _collectableStack.RemoveAt(index);
             _collectableStack.TrimExcess();
             _stackManager.StackTypeUpdaterCommand.Execute();
+            _stackManager.OnSetStackAmount();
         }
     }
 }

@@ -1,54 +1,62 @@
+using Runtime.Enums;
 using Runtime.Managers;
-using Runtime.Signals;
 using UnityEngine;
 
 namespace Runtime.Controllers.Collectables
 {
     public class CollectablePhysicsController : MonoBehaviour
     {
-        
-
         [SerializeField] private CollectableManager manager;
 
+        private const string PlayerTag = "Player";
         private const string CollectableTag = "Collectable";
         private const string CollectedTag = "Collected";
         private const string GateTag = "Gate";
-        private const string AtmTag = "ATM";
+        private const string GateRedTag = "Gate Red";
+        private const string GateBlueTag = "Gate Blue";
+        private const string GateGreenTag = "Gate Green";
         private const string ObstacleTag = "Obstacle";
         private const string ConveyorTag = "Conveyor";
 
+        private GateTypes _gateTypes;
+
         private void OnTriggerEnter(Collider other)
         {
-            string otherTag = other.tag;
-            
-            switch (otherTag)
-            {
-                case CollectableTag when CompareTag(CollectedTag):
-                    HandleCollectableInteraction(other);
-                    break;
+            if (!CompareTag(CollectedTag))
+                return;
 
-                case GateTag when CompareTag(CollectedTag):
+            switch (other.tag)
+            {
+                case GateTag:
                     manager.CollectableUpgrade(manager.GetCurrentValue());
                     break;
 
-                case AtmTag when CompareTag(CollectedTag):
-                    manager.InteractionWithAtm(transform.parent.gameObject);
-                    break;
-
-                case ObstacleTag when CompareTag(CollectedTag):
+                case ObstacleTag:
                     manager.InteractionWithObstacle(transform.parent.gameObject);
                     break;
 
-                case ConveyorTag when CompareTag(CollectedTag):
+                case ConveyorTag:
                     manager.InteractionWithConveyor();
+                    break;
+
+                case GateBlueTag:
+                    CollectableUpgrade(GateTypes.GateBlue, "Blue");
+                    break;
+
+                case GateGreenTag:
+                    CollectableUpgrade(GateTypes.GateGreen, "Green");
+                    break;
+
+                case GateRedTag:
+                    CollectableUpgrade(GateTypes.GateRed, "Red");
                     break;
             }
         }
 
-        private void HandleCollectableInteraction(Collider other)
+        private void CollectableUpgrade(GateTypes gateType, string debugMessage)
         {
-            other.tag = CollectedTag;
-            manager.InteractionWithCollectable(other.transform.parent.gameObject);
+            manager.CollectableUpgrade((int)gateType);
+            Debug.LogWarning(debugMessage);
         }
     }
 }

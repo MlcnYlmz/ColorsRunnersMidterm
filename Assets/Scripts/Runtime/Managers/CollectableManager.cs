@@ -1,7 +1,7 @@
-using System;
 using Runtime.Controllers.Collectables;
 using Runtime.Data.UnityObject;
 using Runtime.Data.ValueObject;
+using Runtime.Enums;
 using Runtime.Signals;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -16,6 +16,11 @@ namespace Runtime.Managers
 
         [SerializeField] private CollectableMeshController meshController;
         [SerializeField] private CollectablePhysicsController physicsController;
+        [SerializeField] private CollectableAnimationController animationController;
+
+        public CollectableColorTypes collectableColorType;
+
+        [Space] [HideInInspector] public CollectableColorTypes playerColorType;
 
         #endregion
 
@@ -36,22 +41,64 @@ namespace Runtime.Managers
             SendDataToController();
         }
 
+        private void OnEnable()
+        {
+            SubscribeEvents();
+        }
+
+        private void SubscribeEvents()
+        {
+            PlayerSignals.Instance.onColorType += OnPlayerColorType;
+        }
+
+        private void OnPlayerColorType(CollectableColorTypes colorTypeValue)
+        {
+            playerColorType = colorTypeValue;
+        }
+
+        private void OnDisable()
+        {
+            UnSubscribeEvents();
+        }
+
+        private void UnSubscribeEvents()
+        {
+            PlayerSignals.Instance.onColorType -= OnPlayerColorType;
+        }
+
+        private void Start()
+        {
+            meshController.ChangeColor((int)collectableColorType);
+        }
+
         private CollectableData GetCollectableData() => Resources.Load<CD_Collectable>(_collectableDataPath).Data;
 
         private void SendDataToController()
         {
-            meshController.SetMeshData(_data.MeshData);
             meshController.SetColorData(_data.ColorData);
         }
 
-      
+
         internal void CollectableUpgrade(int value)
         {
-            if (_currentValue < 2) _currentValue++;
-            meshController.UpgradeCollectableVisual(_currentValue);
-            meshController.UpgradeCollectableVisualColor(_currentValue);
+            meshController.ChangeColor(value);
+            Debug.LogWarning("VALUE :" + value);
             StackSignals.Instance.onUpdateType?.Invoke();
         }
+
+        internal void CollectableAnimChange()
+        {
+            if (IsCurrentTrigger("Idle"))
+            {
+                animationController.AnimationState(CollectableAnimationStates.Run);
+            }
+        }
+
+        private bool IsCurrentTrigger(string triggerName)
+        {
+            return animationController.animator.GetCurrentAnimatorStateInfo(0).IsName(triggerName);
+        }
+
 
         public byte GetCurrentValue()
         {
@@ -61,6 +108,9 @@ namespace Runtime.Managers
         public void InteractionWithCollectable(GameObject collectableGameObject)
         {
             StackSignals.Instance.onInteractionCollectable?.Invoke(collectableGameObject);
+            StackSignals.Instance.onUpdateAnimation?.Invoke();
+
+            Debug.LogWarning("Animation Changed");
         }
 
         public void InteractionWithAtm(GameObject collectableGameObject)
@@ -77,5 +127,7 @@ namespace Runtime.Managers
         {
             StackSignals.Instance.onInteractionConveyor?.Invoke();
         }
+
+        public CollectableColorTypes CollectableColorType => collectableColorType;
     }
 }

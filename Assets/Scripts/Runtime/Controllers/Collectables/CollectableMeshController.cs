@@ -10,15 +10,11 @@ namespace Runtime.Controllers.Collectables
 
         #region Serialized Variables
 
-        [SerializeField] private MeshFilter meshFilter;
-
-        [SerializeField] private MeshRenderer meshRenderer;
+        [SerializeField] private SkinnedMeshRenderer skinnedMeshRenderer;
 
         #endregion
 
         #region Private Variables
-
-        [ShowInInspector] private CollectableMeshData _data;
 
         [ShowInInspector] private CollectableColorData _collectableColorData;
 
@@ -27,41 +23,17 @@ namespace Runtime.Controllers.Collectables
         #endregion
 
 
-        private void OnEnable()
-        {
-            ActivateMeshVisuals();
-        }
-
-        internal void SetMeshData(CollectableMeshData meshData)
-        {
-            _data = meshData;
-        }
-
         internal void SetColorData(CollectableColorData colorData)
         {
             _collectableColorData = colorData;
         }
 
-        private void ActivateMeshVisuals()
+
+        internal void ChangeColor(int value)
         {
-            meshFilter.mesh = _data.MeshList[0];
-        }
-
-        internal void UpgradeCollectableVisual(int value)
-        {
-            meshFilter.mesh = _data.MeshList[value];
-        }
-
-
-        internal void UpgradeCollectableVisualColor(int value)
-        {
-            meshRenderer.materials[0] = _collectableColorData.MaterialsList[value];
-        }
-
-
-        private void ActiveColorVisuals()
-        {
-            meshRenderer.material = _collectableColorData.MaterialsList[0];
+            skinnedMeshRenderer.material = _collectableColorData.MaterialsList[value];
+            
+            Debug.LogWarning("Color Changed");
         }
     }
 }
